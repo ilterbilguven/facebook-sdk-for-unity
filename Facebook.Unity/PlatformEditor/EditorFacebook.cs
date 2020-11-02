@@ -197,7 +197,17 @@ namespace Facebook.Unity.Editor
             return;
         }
 
+        public bool SetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+        {
+            return true;
+        }
+
         public void SetPushNotificationsDeviceTokenString(string token)
+        {
+            return;
+        }
+
+        public void SetDataProcessingOptions(IEnumerable<string> options, int country, int state)
         {
             return;
         }
@@ -332,6 +342,219 @@ namespace Facebook.Unity.Editor
         {
             var result = new AccessTokenRefreshResult(resultContainer);
             CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnFriendFinderComplete(ResultContainer resultContainer)
+        {
+            var result = new GamingServicesFriendFinderResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnUploadImageToMediaLibraryComplete(ResultContainer resultContainer)
+        {
+            var result = new MediaUploadResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnUploadVideoToMediaLibraryComplete(ResultContainer resultContainer)
+        {
+            var result = new MediaUploadResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnOnIAPReadyComplete(ResultContainer resultContainer)
+        {
+            var result = new IAPReadyResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnGetCatalogComplete(ResultContainer resultContainer)
+        {
+            var result = new CatalogResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnGetPurchasesComplete(ResultContainer resultContainer)
+        {
+            var result = new PurchasesResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnPurchaseComplete(ResultContainer resultContainer)
+        {
+            var result = new PurchaseResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnConsumePurchaseComplete(ResultContainer resultContainer)
+        {
+            var result = new ConsumePurchaseResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnInitCloudGameComplete(ResultContainer resultContainer)
+        {
+            var result = new InitCloudGameResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnScheduleAppToUserNotificationComplete(ResultContainer resultContainer)
+        {
+            var result = new ScheduleAppToUserNotificationResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnLoadInterstitialAdComplete(ResultContainer resultContainer)
+        {
+            var result = new InterstitialAdResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnShowInterstitialAdComplete(ResultContainer resultContainer)
+        {
+            var result = new InterstitialAdResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnLoadRewardedVideoComplete(ResultContainer resultContainer)
+        {
+            var result = new RewardedVideoResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnShowRewardedVideoComplete(ResultContainer resultContainer)
+        {
+            var result = new RewardedVideoResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OnGetPayloadComplete(ResultContainer resultContainer)
+        {
+            var result = new PayloadResult(resultContainer);
+            CallbackManager.OnFacebookResponse(result);
+        }
+
+        public void OpenFriendFinderDialog(FacebookDelegate<IGamingServicesFriendFinderResult> callback)
+        {
+            this.editorWrapper.ShowMockFriendFinderDialog(
+                this.OnFriendFinderComplete,
+                "Friend Finder Dialog",
+                this.CallbackManager.AddFacebookDelegate(callback));
+        }
+
+        public void UploadImageToMediaLibrary(
+            string caption,
+            Uri imageUri,
+            bool shouldLaunchMediaDialog,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["id"] = "1232453";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+            this.OnFetchDeferredAppLinkComplete(new ResultContainer(result));
+        }
+
+        public void UploadVideoToMediaLibrary(
+            string caption,
+            Uri imageUri,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            // construct a dummy ResultContainer
+            // to pretend we actually did an upload
+            var result = new Dictionary<string, object>();
+            result["video_id"] = "456789";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+            this.OnFetchDeferredAppLinkComplete(new ResultContainer(result));
+        }
+
+        public void OnIAPReady(FacebookDelegate<IIAPReadyResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void GetCatalog(FacebookDelegate<ICatalogResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "[{\"productID\":\"123\",\"title\":\"item\",\"price\":\"$0.99\",\"priceCurrencyCode\":\"USD\"}]";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void GetPurchases(FacebookDelegate<IPurchasesResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "[{\"isConsumed\":\"false\",\"paymentID\":\"2607915835989565\",\"productID\":\"123\",\"purchaseTime\":\"1583797821\":\"purchaseToken\":\"1655700687901784\",\"signedRequest\":\"abc123ZYZ\"}]";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void Purchase(string productID, FacebookDelegate<IPurchaseResult> callback, string developerPayload = "")
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "{\"isConsumed\":\"false\",\"paymentID\":\"2607915835989565\",\"productID\":\"123\",\"purchaseTime\":\"1583797821\",\"purchaseToken\":\"1655700687901784\",\"signedRequest\":\"XZZ9xQDHOGulfhZMRVQ8UC-TadAqFrueYveAAqxock.eyJhbGdvcm10aG0iOiJITUFDLVNIQTI1Nilslm...\"}";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void ConsumePurchase(string productID, FacebookDelegate<IConsumePurchaseResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void InitCloudGame(FacebookDelegate<IInitCloudGameResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void ScheduleAppToUserNotification(
+            string title,
+            string body,
+            Uri media,
+            int timeInterval,
+            string payload,
+            FacebookDelegate<IScheduleAppToUserNotificationResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void LoadInterstitialAd(string placementID, FacebookDelegate<IInterstitialAdResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void ShowInterstitialAd(string placementID, FacebookDelegate<IInterstitialAdResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void LoadRewardedVideo(string placementID, FacebookDelegate<IRewardedVideoResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void ShowRewardedVideo(string placementID, FacebookDelegate<IRewardedVideoResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
+        }
+
+        public void GetPayload(FacebookDelegate<IPayloadResult> callback)
+        {
+            var result = new Dictionary<string, object>();
+            result["success"] = "{\"key\":\"test\",\"value\":\"123\"}";
+            result[Constants.CallbackIdKey] = this.CallbackManager.AddFacebookDelegate(callback);
         }
 
         #region Canvas Dummy Methods

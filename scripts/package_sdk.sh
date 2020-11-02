@@ -20,10 +20,10 @@
 # This file performs the custom build logic to setup the Plugins
 # in the unity project
 
-. $(dirname $0)/common.sh
+. "$(dirname "$0")/common.sh"
 
 UNITY_PATH="/Applications/Unity/Unity.app/Contents/MacOS/Unity"
-$UNITY_PATH -batchmode -nographics -projectPath $UNITY_PACKAGE_ROOT -executeMethod FacebookConsoleEndpoint.ExportPackage -quit \
+$UNITY_PATH -batchmode -nographics -projectPath "$UNITY_PACKAGE_ROOT" -executeMethod FacebookConsoleEndpoint.ExportPackage -quit \
 || die "Failed to export package. Make sure the Facebook.Unity project is not open in Unity"
 
 info "Unity Package exported to $PROJECT_ROOT/out/facebook-unity-sdk-$SDK_VERSION.unitypackage"

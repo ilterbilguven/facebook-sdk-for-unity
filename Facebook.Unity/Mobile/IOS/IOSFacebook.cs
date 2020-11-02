@@ -41,7 +41,6 @@ namespace Facebook.Unity.Mobile.IOS
             : base(callbackManager)
         {
             this.iosWrapper = iosWrapper;
-            this.userID = this.iosWrapper.FBGetUserID();
         }
 
         public enum FBInsightsFlushBehavior
@@ -79,6 +78,11 @@ namespace Facebook.Unity.Mobile.IOS
         public override void SetAdvertiserIDCollectionEnabled(bool advertiserIDCollectionEnabled)
         {
             this.iosWrapper.FBAdvertiserIDCollectionEnabled(advertiserIDCollectionEnabled);
+        }
+
+        public override bool SetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+        {
+            return this.iosWrapper.FBAdvertiserTrackingEnabled(advertiserTrackingEnabled);
         }
 
         public override void SetPushNotificationsDeviceTokenString(string token)
@@ -122,6 +126,11 @@ namespace Facebook.Unity.Mobile.IOS
             this.iosWrapper.UpdateUserProperties(dict.NumEntries, dict.Keys, dict.Values);
         }
 
+        public override void SetDataProcessingOptions(IEnumerable<string> options, int country, int state)
+        {
+            this.iosWrapper.SetDataProcessingOptions(options.ToArray(), country, state);
+        }
+
         public void Init(
             string appId,
             bool frictionlessRequests,
@@ -136,6 +145,7 @@ namespace Facebook.Unity.Mobile.IOS
                 frictionlessRequests,
                 iosURLSuffix,
                 Constants.UnitySDKUserAgentSuffixLegacy);
+            this.userID = this.iosWrapper.FBGetUserID();
         }
 
         public override void LogInWithReadPermissions(
@@ -288,6 +298,12 @@ namespace Facebook.Unity.Mobile.IOS
             this.iosWrapper.GetAppLink(System.Convert.ToInt32(CallbackManager.AddFacebookDelegate(callback)));
         }
 
+        public override void OpenFriendFinderDialog(
+            FacebookDelegate<IGamingServicesFriendFinderResult> callback)
+		{
+            this.iosWrapper.OpenFriendFinderDialog(System.Convert.ToInt32(CallbackManager.AddFacebookDelegate(callback)));
+		}
+
         public override void RefreshCurrentAccessToken(
             FacebookDelegate<IAccessTokenRefreshResult> callback)
         {
@@ -298,6 +314,30 @@ namespace Facebook.Unity.Mobile.IOS
         protected override void SetShareDialogMode(ShareDialogMode mode)
         {
             this.iosWrapper.SetShareDialogMode((int)mode);
+        }
+
+        public override void UploadImageToMediaLibrary(
+            string caption,
+            Uri imageUri,
+            bool shouldLaunchMediaDialog,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            this.iosWrapper.UploadImageToMediaLibrary(
+                System.Convert.ToInt32(CallbackManager.AddFacebookDelegate(callback)),
+                caption,
+                imageUri.AbsolutePath.ToString(),
+                shouldLaunchMediaDialog);
+        }
+
+        public override void UploadVideoToMediaLibrary(
+            string caption,
+            Uri videoUri,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            this.iosWrapper.UploadVideoToMediaLibrary(
+                System.Convert.ToInt32(CallbackManager.AddFacebookDelegate(callback)),
+                caption,
+                videoUri.AbsolutePath.ToString());
         }
 
         private static IIOSWrapper GetIOSWrapper()

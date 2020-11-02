@@ -25,5 +25,35 @@ namespace Facebook.Unity.Mobile
         void OnFetchDeferredAppLinkComplete(ResultContainer resultContainer);
 
         void OnRefreshCurrentAccessTokenComplete(ResultContainer resultContainer);
+
+        void OnFriendFinderComplete(ResultContainer resultContainer);
+
+        void OnUploadImageToMediaLibraryComplete(ResultContainer resultContainer);
+
+        void OnUploadVideoToMediaLibraryComplete(ResultContainer resultContainer);
+
+        void OnOnIAPReadyComplete(ResultContainer resultContainer);
+
+        void OnGetCatalogComplete(ResultContainer resultContainer);
+
+        void OnGetPurchasesComplete(ResultContainer resultContainer);
+
+        void OnPurchaseComplete(ResultContainer resultContainer);
+
+        void OnConsumePurchaseComplete(ResultContainer resultContainer);
+
+        void OnInitCloudGameComplete(ResultContainer resultContainer);
+
+        void OnScheduleAppToUserNotificationComplete(ResultContainer resultContainer);
+
+        void OnLoadInterstitialAdComplete(ResultContainer resultContainer);
+
+        void OnShowInterstitialAdComplete(ResultContainer resultContainer);
+
+        void OnLoadRewardedVideoComplete(ResultContainer resultContainer);
+
+        void OnShowRewardedVideoComplete(ResultContainer resultContainer);
+
+        void OnGetPayloadComplete(ResultContainer resultContainer);
     }
 }

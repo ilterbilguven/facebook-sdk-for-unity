@@ -35,51 +35,6 @@ namespace Facebook.Unity.Editor
     \s*return\ )NO(\;\n                 #   return NO;
   \})                                   # }";
 
-        public static void FixSimulator(string path)
-        {
-            string fullPath = Path.Combine(path, Path.Combine("Libraries", "RegisterMonoModules.cpp"));
-            string data = Load(fullPath);
-
-            data = Regex.Replace(data, @"\s+void\s+mono_dl_register_symbol\s+\(const\s+char\*\s+name,\s+void\s+\*addr\);", string.Empty);
-            data = Regex.Replace(data, "typedef int gboolean;", "typedef int gboolean;\n\tvoid mono_dl_register_symbol (const char* name, void *addr);");
-
-            // this only need to be done for unity 4, unity 5 declares user functions correctly
-            if (GetUnityVersionNumber() < 500)
-            {
-                data = Regex.Replace(
-                    data,
-                    @"#endif\s+//\s*!\s*\(\s*TARGET_IPHONE_SIMULATOR\s*\)\s*}\s*void RegisterAllStrippedInternalCalls\s*\(\s*\)",
-                    "}\n\nvoid RegisterAllStrippedInternalCalls()");
-                data = Regex.Replace(
-                    data,
-                    @"mono_aot_register_module\(mono_aot_module_mscorlib_info\);",
-                    "mono_aot_register_module(mono_aot_module_mscorlib_info);\n#endif // !(TARGET_IPHONE_SIMULATOR)");
-            }
-
-            Save(fullPath, data);
-        }
-
-        public static void AddVersionDefine(string path)
-        {
-            int versionNumber = GetUnityVersionNumber();
-
-            string fullPath = Path.Combine(path, Path.Combine("Libraries", "RegisterMonoModules.h"));
-            string data = Load(fullPath);
-
-            if (versionNumber >= 430)
-            {
-                data += "\n#define HAS_UNITY_VERSION_DEF 1\n";
-            }
-            else
-            {
-                data += "\n#define UNITY_VERSION ";
-                data += versionNumber;
-                data += "\n";
-            }
-
-            Save(fullPath, data);
-        }
-
         public static void FixColdStart(string path)
         {
             string fullPath = Path.Combine(path, Path.Combine("Classes", "UnityAppController.mm"));
@@ -99,8 +54,14 @@ namespace Facebook.Unity.Editor
             PBXProject proj = new PBXProject();
             proj.ReadFromString(File.ReadAllText(projPath));
             string targetGUID = proj.TargetGuidByName("Unity-iPhone");
-            string corekitPath = Path.Combine(path, "Frameworks/FacebookSDK/Plugins/iOS/FBSDKCoreKit.framework/FBSDKCoreKit");
-            proj.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-force_load " + corekitPath);
+            proj.AddBuildProperty(targetGUID, "GCC_PREPROCESSOR_DEFINITIONS", " $(inherited) FBSDKCOCOAPODS=1");
+            proj.AddBuildProperty(targetGUID, "OTHER_LDFLAGS", "-ObjC");
+            proj.AddBuildProperty(targetGUID, "SWIFT_VERSION", "5.0");
+            proj.AddBuildProperty(targetGUID, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
+            proj.AddBuildProperty(targetGUID, "LD_RUNPATH_SEARCH_PATHS", "@executable_path/Frameworks");
+            proj.AddBuildProperty(targetGUID, "LIBRARY_SEARCH_PATHS", "$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)");
+            proj.AddBuildProperty(targetGUID, "LIBRARY_SEARCH_PATHS", "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)");
+            proj.AddFrameworkToProject(targetGUID, "Accelerate.framework", true);
             File.WriteAllText(projPath, proj.WriteToString());
         }
 

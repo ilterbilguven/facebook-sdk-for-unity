@@ -41,6 +41,7 @@ namespace Facebook.Unity
         private static IFacebook facebook;
         private static bool isInitCalled = false;
         private static string facebookDomain = "facebook.com";
+        private static string gamingDomain = "fb.gg";
         private static string graphApiVersion = Constants.GraphApiVersion;
 
         private delegate void OnDLLLoaded();
@@ -156,6 +157,12 @@ namespace Facebook.Unity
         {
             get
             {
+                if (FB.IsLoggedIn && AccessToken.CurrentAccessToken != null) {
+                    string graphDomain = AccessToken.CurrentAccessToken.GraphDomain;
+                    if (graphDomain == "gaming") {
+                        return FB.gamingDomain;
+                    }
+                }
                 return FB.facebookDomain;
             }
 
@@ -925,6 +932,24 @@ namespace Facebook.Unity
                 Mobile.MobileFacebookImpl.UpdateUserProperties(parameters);
             }
 
+            public static void SetDataProcessingOptions(IEnumerable<string> options)
+            {
+                if (options == null)
+                {
+                    options = new string[] { };
+                }
+                Mobile.MobileFacebookImpl.SetDataProcessingOptions(options, 0, 0);
+            }
+
+            public static void SetDataProcessingOptions(IEnumerable<string> options, int country, int state)
+            {
+                if (options == null)
+                {
+                    options = new string[] { };
+                }
+                Mobile.MobileFacebookImpl.SetDataProcessingOptions(options, country, state);
+            }
+
             private static IMobileFacebook MobileFacebookImpl
             {
                 get
@@ -992,6 +1017,15 @@ namespace Facebook.Unity
             }
 
             /// <summary>
+            /// Sets the setting for Advertiser Tracking Enabled.
+            /// </summary>
+            /// <param name="advertiserTrackingEnabled">The setting for Advertiser Tracking Enabled</param>
+            public static bool SetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+            {
+                return Mobile.MobileFacebookImpl.SetAdvertiserTrackingEnabled(advertiserTrackingEnabled);
+            }
+
+            /// <summary>
             /// Sets device token in the purpose of uninstall tracking.
             /// </summary>
             /// <param name="token">The device token from APNs</param>
@@ -1016,6 +1050,22 @@ namespace Facebook.Unity
                 {
                     var androidFacebook = FacebookImpl as AndroidFacebook;
                     return (androidFacebook != null) ? androidFacebook.KeyHash : string.Empty;
+                }
+            }
+
+            /// <summary>
+            /// Retrieves the login status for the user. This will return an access token for the app if a user
+            /// is logged into the Facebook for Android app on the same device and that user had previously
+            /// logged into the app.If an access token was retrieved then a toast will be shown telling the
+            /// user that they have been logged in.
+            /// </summary>
+            /// <param name="callback">The callback to be called when the request completes</param>
+            public static void RetrieveLoginStatus(FacebookDelegate<ILoginStatusResult> callback)
+            {
+                var androidFacebook = FacebookImpl as AndroidFacebook;
+                if (androidFacebook != null)
+                {
+                    androidFacebook.RetrieveLoginStatus(callback);
                 }
             }
         }

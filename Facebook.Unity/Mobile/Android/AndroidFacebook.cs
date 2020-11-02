@@ -44,7 +44,6 @@ namespace Facebook.Unity.Mobile.Android
         {
             this.KeyHash = string.Empty;
             this.androidWrapper = androidWrapper;
-            this.userID = this.androidWrapper.CallStatic<string>("GetUserID");
         }
 
         // key Hash used for Android SDK
@@ -88,6 +87,15 @@ namespace Facebook.Unity.Mobile.Android
             this.CallFB("UpdateUserProperties", args.ToJsonString());
         }
 
+        public override void SetDataProcessingOptions(IEnumerable<string> options, int country, int state)
+        {
+            var args = new MethodArguments();
+            args.AddList<string>("options", options);
+            args.AddPrimative<int>("country", country);
+            args.AddPrimative<int>("state", state);
+            this.CallFB("SetDataProcessingOptions", args.ToJsonString());
+        }
+
         public override void SetAutoLogAppEventsEnabled(bool autoLogAppEventsEnabled)
         {
             this.CallFB("SetAutoLogAppEventsEnabled", autoLogAppEventsEnabled.ToString());
@@ -96,6 +104,11 @@ namespace Facebook.Unity.Mobile.Android
         public override void SetAdvertiserIDCollectionEnabled(bool advertiserIDCollectionEnabled)
         {
             this.CallFB("SetAdvertiserIDCollectionEnabled", advertiserIDCollectionEnabled.ToString());
+        }
+
+        public override bool SetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+        {
+            return false;
         }
 
         public override void SetPushNotificationsDeviceTokenString(string token)
@@ -137,6 +150,7 @@ namespace Facebook.Unity.Mobile.Android
             args.AddString("appId", appId);
             var initCall = new JavaMethodCall<IResult>(this, "Init");
             initCall.Call(args);
+            this.userID = this.androidWrapper.CallStatic<string>("GetUserID");
         }
 
         public override void LogInWithReadPermissions(
@@ -163,8 +177,21 @@ namespace Facebook.Unity.Mobile.Android
 
         public override void LogOut()
         {
+            base.LogOut();
             var logoutCall = new JavaMethodCall<IResult>(this, "Logout");
             logoutCall.Call();
+        }
+
+        public void RetrieveLoginStatus(FacebookDelegate<ILoginStatusResult> callback) {
+            var loginCall = new JavaMethodCall<ILoginStatusResult>(this, "RetrieveLoginStatus");
+            loginCall.Callback = callback;
+            loginCall.Call();
+        }
+
+        public void OnLoginStatusRetrieved(ResultContainer resultContainer)
+        {
+            var result = new LoginStatusResult(resultContainer);
+            this.OnAuthResponse(result);
         }
 
         public override void AppRequest(
@@ -319,6 +346,229 @@ namespace Facebook.Unity.Mobile.Android
                 "RefreshCurrentAccessToken");
             refreshCurrentAccessToken.Callback = callback;
             refreshCurrentAccessToken.Call();
+        }
+
+        public override void OpenFriendFinderDialog(
+            FacebookDelegate<IGamingServicesFriendFinderResult> callback)
+        {
+            var openFriendFinderDialog = new JavaMethodCall<IGamingServicesFriendFinderResult>(
+                this,
+                "OpenFriendFinderDialog")
+            {
+                Callback = callback
+            };
+            openFriendFinderDialog.Call();
+        }
+
+        public override void UploadImageToMediaLibrary(
+            string caption,
+            Uri imageUri,
+            bool shouldLaunchMediaDialog,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("caption", caption);
+            args.AddUri("imageUri", imageUri);
+            args.AddString("shouldLaunchMediaDialog", shouldLaunchMediaDialog.ToString());
+            var uploadImageToMediaLibrary = new JavaMethodCall<IMediaUploadResult>(
+                this,
+                "UploadImageToMediaLibrary")
+            {
+                Callback = callback
+            };
+            uploadImageToMediaLibrary.Call(args);
+        }
+
+        public override void UploadVideoToMediaLibrary(
+            string caption,
+            Uri videoUri,
+            FacebookDelegate<IMediaUploadResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("caption", caption);
+            args.AddUri("videoUri", videoUri);
+            var uploadImageToMediaLibrary = new JavaMethodCall<IMediaUploadResult>(
+                this,
+                "UploadVideoToMediaLibrary")
+            {
+                Callback = callback
+            };
+            uploadImageToMediaLibrary.Call(args);
+        }
+
+        public override void OnIAPReady(
+            FacebookDelegate<IIAPReadyResult> callback)
+        {
+            var onIAPReady = new JavaMethodCall<IIAPReadyResult>(
+                this,
+                "OnIAPReady")
+            {
+                Callback = callback
+            };
+            onIAPReady.Call();
+        }
+
+        public override void GetCatalog(
+            FacebookDelegate<ICatalogResult> callback)
+        {
+            var getCatalog = new JavaMethodCall<ICatalogResult>(
+                this,
+                "GetCatalog")
+            {
+                Callback = callback
+            };
+            getCatalog.Call();
+        }
+
+        public override void GetPurchases(
+            FacebookDelegate<IPurchasesResult> callback)
+        {
+            var getPurchases = new JavaMethodCall<IPurchasesResult>(
+                this,
+                "GetPurchases")
+            {
+                Callback = callback
+            };
+            getPurchases.Call();
+        }
+
+        public override void Purchase(
+            string productID,
+            FacebookDelegate<IPurchaseResult> callback,
+            string developerPayload = "")
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("productID", productID);
+            args.AddString("developerPayload", developerPayload);
+            var purchase = new JavaMethodCall<IPurchaseResult>(
+                this,
+                "Purchase")
+            {
+                Callback = callback
+            };
+            purchase.Call(args);
+        }
+
+        public override void ConsumePurchase(
+            string purchaseToken,
+            FacebookDelegate<IConsumePurchaseResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("purchaseToken", purchaseToken);
+            var consumePurchase = new JavaMethodCall<IConsumePurchaseResult>(
+                this,
+                "ConsumePurchase")
+            {
+                Callback = callback
+            };
+            consumePurchase.Call(args);
+        }
+
+        public override void InitCloudGame(
+            FacebookDelegate<IInitCloudGameResult> callback)
+        {
+            var initCloudGame = new JavaMethodCall<IInitCloudGameResult>(
+                this,
+                "InitCloudGame")
+            {
+                Callback = callback
+            };
+            initCloudGame.Call();
+        }
+
+        public override void ScheduleAppToUserNotification(
+            string title,
+            string body,
+            Uri media,
+            int timeInterval,
+            string payload,
+            FacebookDelegate<IScheduleAppToUserNotificationResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("title", title);
+            args.AddString("body", body);
+            args.AddUri("media", media);
+            args.AddPrimative("timeInterval", timeInterval);
+            args.AddString("payload", payload);
+            var scheduleAppToUserNotification = new JavaMethodCall<IScheduleAppToUserNotificationResult>(
+                this,
+                "ScheduleAppToUserNotification")
+            {
+                Callback = callback
+            };
+            scheduleAppToUserNotification.Call(args);
+        }
+
+        public override void LoadInterstitialAd(
+            string placementID,
+            FacebookDelegate<IInterstitialAdResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("placementID", placementID);
+            var loadInterstitialAd = new JavaMethodCall<IInterstitialAdResult>(
+                this,
+                "LoadInterstitialAd")
+            {
+                Callback = callback
+            };
+            loadInterstitialAd.Call(args);
+        }
+
+        public override void ShowInterstitialAd(
+            string placementID,
+            FacebookDelegate<IInterstitialAdResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("placementID", placementID);
+            var showInterstitialAd = new JavaMethodCall<IInterstitialAdResult>(
+                this,
+                "ShowInterstitialAd")
+            {
+                Callback = callback
+            };
+            showInterstitialAd.Call(args);
+        }
+
+        public override void LoadRewardedVideo(
+            string placementID,
+            FacebookDelegate<IRewardedVideoResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("placementID", placementID);
+            var loadRewardedVideo = new JavaMethodCall<IRewardedVideoResult>(
+                this,
+                "LoadRewardedVideo")
+            {
+                Callback = callback
+            };
+            loadRewardedVideo.Call(args);
+        }
+
+        public override void ShowRewardedVideo(
+            string placementID,
+            FacebookDelegate<IRewardedVideoResult> callback)
+        {
+            MethodArguments args = new MethodArguments();
+            args.AddString("placementID", placementID);
+            var showRewardedVideo = new JavaMethodCall<IRewardedVideoResult>(
+                this,
+                "ShowRewardedVideo")
+            {
+                Callback = callback
+            };
+            showRewardedVideo.Call(args);
+        }
+
+        public override void GetPayload(
+            FacebookDelegate<IPayloadResult> callback)
+        {
+            var getPayload = new JavaMethodCall<IPayloadResult>(
+                this,
+                "GetPayload")
+            {
+                Callback = callback
+            };
+            getPayload.Call();
         }
 
         protected override void SetShareDialogMode(ShareDialogMode mode)

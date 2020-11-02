@@ -139,6 +139,12 @@ namespace Facebook.Unity.IOS
                 title);
         }
 
+        public void OpenFriendFinderDialog(
+            int requestId)
+        {
+            IOSWrapper.IOSFBOpenGamingServicesFriendFinder(requestId);
+        }
+
         public void FBAppEventsActivateApp()
         {
             IOSWrapper.IOSFBAppEventsActivateApp();
@@ -189,6 +195,11 @@ namespace Facebook.Unity.IOS
             IOSWrapper.IOSFBAdvertiserIDCollectionEnabled(advertiserIDCollectionEnabled);
         }
 
+        public bool FBAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+        {
+            return IOSWrapper.IOSFBAdvertiserTrackingEnabled(advertiserTrackingEnabled);
+        }
+
         public void GetAppLink(int requestId)
         {
             IOSWrapper.IOSFBGetAppLink(requestId);
@@ -215,6 +226,35 @@ namespace Facebook.Unity.IOS
             string[] paramVals)
         {
             IOSWrapper.IOSFBUpdateUserProperties(numParams, paramKeys, paramVals);
+        }
+
+        public void SetDataProcessingOptions(string[] options, int country, int state)
+        {
+            IOSWrapper.IOSFBSetDataProcessingOptions(options, options.Length, country, state);
+        }
+
+        public void UploadImageToMediaLibrary(
+            int requestId,
+            string caption,
+            string imageUri,
+            bool shouldLaunchMediaDialog)
+        {
+            IOSWrapper.IOSFBUploadImageToMediaLibrary(
+                requestId,
+                caption,
+                imageUri,
+                shouldLaunchMediaDialog);
+        }
+
+        public void UploadVideoToMediaLibrary(
+            int requestId,
+            string caption,
+            string videoUri)
+        {
+            IOSWrapper.IOSFBUploadVideoToMediaLibrary(
+                requestId,
+                caption,
+                videoUri);
         }
 
         public void FetchDeferredAppLink(int requestId)
@@ -317,6 +357,9 @@ namespace Facebook.Unity.IOS
         private static extern void IOSFBAdvertiserIDCollectionEnabled(bool advertiserIDCollectionEnabledID);
 
         [DllImport("__Internal")]
+        private static extern bool IOSFBAdvertiserTrackingEnabled(bool advertiserTrackingEnabled);
+
+        [DllImport("__Internal")]
         private static extern void IOSFBGetAppLink(int requestID);
 
         [DllImport("__Internal")]
@@ -332,7 +375,30 @@ namespace Facebook.Unity.IOS
         private static extern void IOSFBSetUserID(string userID);
 
         [DllImport("__Internal")]
+        private static extern void IOSFBOpenGamingServicesFriendFinder(int requestID);
+
+        [DllImport("__Internal")]
+        private static extern void IOSFBUploadImageToMediaLibrary(
+            int requestID,
+            string caption,
+            string imageUri,
+            bool shouldLaunchMediaDialog);
+
+        [DllImport("__Internal")]
+        private static extern void IOSFBUploadVideoToMediaLibrary(
+            int requestID,
+            string caption,
+            string videoUri);
+
+        [DllImport("__Internal")]
         private static extern string IOSFBGetUserID();
+
+        [DllImport("__Internal")]
+        private static extern void IOSFBSetDataProcessingOptions(
+            string[] options,
+            int numOptions,
+            int country,
+            int state);
 
         [DllImport("__Internal")]
         private static extern void IOSFBUpdateUserProperties(

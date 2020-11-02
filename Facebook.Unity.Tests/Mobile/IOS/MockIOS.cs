@@ -167,6 +167,12 @@ namespace Facebook.Unity.Tests.Mobile.IOS
             this.LogMethodCall();
         }
 
+        public bool FBAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
+        {
+            this.LogMethodCall();
+            return true;
+        }
+
         public void FBAdvertiserIDCollectionEnabled(bool advertiserIDCollectionEnabled)
         {
             this.LogMethodCall();
@@ -186,6 +192,12 @@ namespace Facebook.Unity.Tests.Mobile.IOS
         public void FetchDeferredAppLink(int requestId)
         {
             this.LogMethodCall();
+        }
+
+        public void OpenFriendFinderDialog(int requestId)
+        {
+            var result = MockResults.GetGenericResult(requestId, this.ResultExtras);
+            this.MobileFacebook.OnFriendFinderComplete(new ResultContainer(result));
         }
 
         public void RefreshCurrentAccessToken(int requestID)
@@ -222,6 +234,30 @@ namespace Facebook.Unity.Tests.Mobile.IOS
         public void UpdateUserProperties(int numParams, string[] paramKeys, string[] paramVals)
         {
             this.LogMethodCall();
+        }
+
+        public void SetDataProcessingOptions(string[] options, int country, int state)
+        {
+            this.LogMethodCall();
+        }
+
+        public void UploadImageToMediaLibrary(
+            int requestId,
+            string caption,
+            string mediaUri,
+            bool shouldLaunchMediaDialog)
+        {
+            var result = MockResults.GetGenericResult(requestId, this.ResultExtras);
+            this.MobileFacebook.OnUploadImageToMediaLibraryComplete(new ResultContainer(result));
+        }
+
+        public void UploadVideoToMediaLibrary(
+            int requestId,
+            string caption,
+            string mediaUri)
+        {
+            var result = MockResults.GetGenericResult(requestId, this.ResultExtras);
+            this.MobileFacebook.OnUploadVideoToMediaLibraryComplete(new ResultContainer(result));
         }
     }
 }
